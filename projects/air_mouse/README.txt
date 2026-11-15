@@ -1,6 +1,9 @@
 隔空鼠标 · 说明
 ================================================================
 
+界面预览：preview.png（由 tools/make_screenshots.py 离屏渲染；
+背景为合成的暗色渐变，骨架由真实的 draw_skeleton 画出）
+
 运行：双击根目录“启动隔空鼠标.bat”
 依赖：py -3.12 -m pip install pyautogui
 

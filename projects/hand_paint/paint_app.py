@@ -157,10 +157,10 @@ def main():
                  "erase": "爆炸擦除", "hover": "悬停"}.get(mode, mode)
         hud = (f"mode: {label}   strokes: {len(manager.strokes)}   "
                f"FPS: {fps_ema:.0f}   infer: {det.last_infer_ms:.0f}ms")
+        # 画布是纯深色的，白色粗体一层就够；原先是「白粗 + 黑细」双层描边，
+        # 那是为了压在摄像头画面上可读，现在只会糊成重影。
         cv2.putText(canvas, hud, (12, 28),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.62, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(canvas, hud, (12, 28),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.62, (0, 0, 0), 1, cv2.LINE_AA)
         cv2.putText(canvas, "食指画 / 捏合拖动 / 张掌爆炸擦除 / c清空 / ESC退出",
                     (12, H - 14), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
                     (230, 230, 230), 1, cv2.LINE_AA)

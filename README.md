@@ -4,14 +4,27 @@
 
 识别层不依赖 PyQt、不依赖 OpenGL、不依赖 pyautogui。加新玩法不用碰识别代码，改判定规则只改一处。
 
-![双手地球](projects/hand_3d/globe_preview.png)
-
 | 应用 | 手势 | 技术栈 |
 |---|---|---|
 | **花开** | 张掌 → 花朵缓慢盛开，握拳 → 收拢，手移出画面保持不变 | OpenCV + 帧序列贴图 |
 | **手势作画** | 只伸食指作画，捏合选中并拖动笔画，张掌让笔画爆成粒子 | OpenCV + 矢量笔画 + 粒子 |
 | **双手地球** | 左手捏合拖动旋转，右手张开程度控制推拉，双手同时捏合切换中国地图 | PyQt6 + OpenGL |
 | **隔空鼠标** | 张掌移动光标，捏合单击，握拳拖拽，两指上下滚动 | OpenCV + pyautogui |
+
+## 界面预览
+
+| 花开 · 张掌盛开 | 手势作画 · 作画中，左下笔画正被张掌擦成粒子 |
+|---|---|
+| ![](projects/flower_bloom/preview.png) | ![](projects/hand_paint/preview.png) |
+| **双手地球** · 初始正对中国，北京上立大头针 | **中国地图** · 按经纬度贴在球面上的疆域层 |
+| ![](projects/hand_3d/globe_preview.png) | ![](projects/hand_3d/map_preview.png) |
+| **隔空鼠标** · 摄像头画面叠加 21 点骨架 | |
+| ![](projects/air_mouse/preview.png) | |
+
+图片全部由 `py -3.12 tools/make_screenshots.py` 离屏渲染生成，走的是各应用自己的绘制函数，不是另画的示意图。两点如实说明：
+
+- 「花开」用的是仓库外那份真实玫瑰帧（120 帧），没装素材时会渲染成程序化花型；
+- 「隔空鼠标」的背景是**合成**的（构建环境没有摄像头），骨架由真实的 `draw_skeleton` 画出。HUD 里的 FPS、推理耗时是示例数值。
 
 ## 快速开始
 
@@ -69,7 +82,9 @@ hand-gesture-playground/
 │  └─ air_mouse/            隔空鼠标
 ├─ assets/                  手部模型（不进仓库，脚本下载）
 ├─ textures/                地球贴图 day4k / clouds / lights
-├─ tools/fetch_assets.py    素材获取与校验
+├─ tools/
+│  ├─ fetch_assets.py       素材获取与校验
+│  └─ make_screenshots.py   离屏渲染上面那几张预览图
 ├─ tests/                   不接摄像头也能跑的自检
 └─ 启动*.bat                四个启动脚本（固定使用 py -3.12）
 ```

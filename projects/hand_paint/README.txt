@@ -1,6 +1,8 @@
 手势作画 · 说明
 ================================================================
 
+界面预览：preview.png（由 tools/make_screenshots.py 离屏渲染）
+
 运行：双击根目录“启动手势作画.bat”，或在根目录执行
     py -3.12 projects/hand_paint/paint_app.py
 
