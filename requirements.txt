@@ -1,0 +1,15 @@
+# 运行环境：Windows + Python 3.12（mediapipe 官方 wheel 对 3.13 支持不稳定）
+# 安装：py -3.12 -m pip install -r requirements.txt
+# 装完先跑一次 py -3.12 tools/fetch_assets.py 下载手部模型
+
+# 识别层 + 花开 + 手势作画
+opencv-python
+mediapipe
+numpy
+
+# 双手地球
+PyQt6
+PyOpenGL
+
+# 隔空鼠标（会接管系统鼠标指针，不用这个应用可以不装）
+pyautogui

@@ -1,0 +1,13 @@
+# 让 Windows 上写的 CRLF 不会被当成每次修改都变动的行尾
+* text=auto
+
+# 启动脚本必须保留 CRLF，否则 cmd 解析异常
+*.bat text eol=crlf
+
+# 二进制素材不做行尾转换，也不让 git 尝试 diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.npz binary
+*.task binary
+*.zip binary

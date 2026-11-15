@@ -1,0 +1,667 @@
+{
+ "fist": {
+  "core": [
+   "FIST",
+   false,
+   0.47,
+   0.63
+  ],
+  "flower": "fist",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.0,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.47,
+   0.63
+  ]
+ },
+ "fist@big": {
+  "core": [
+   "FIST",
+   false,
+   0.4595,
+   0.5775
+  ],
+  "flower": "fist",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.0,
+   "pinch": 0.7288656125
+  },
+  "paint": [
+   "hover",
+   0.4595,
+   0.5775
+  ]
+ },
+ "fist@left": {
+  "core": [
+   "FIST",
+   false,
+   0.25,
+   0.63
+  ],
+  "flower": "fist",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.0,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.25,
+   0.63
+  ]
+ },
+ "fist@right": {
+  "core": [
+   "FIST",
+   false,
+   0.65,
+   0.63
+  ],
+  "flower": "fist",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.0,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.65,
+   0.63
+  ]
+ },
+ "fist@small": {
+  "core": [
+   "FIST",
+   false,
+   0.4775,
+   0.6675
+  ],
+  "flower": "fist",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.0,
+   "pinch": 0.728862913
+  },
+  "paint": [
+   "hover",
+   0.4775,
+   0.6675
+  ]
+ },
+ "index_only": {
+  "core": [
+   "OTHER",
+   false,
+   0.47,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.25,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "paint",
+   0.47,
+   0.42
+  ]
+ },
+ "index_only@big": {
+  "core": [
+   "OTHER",
+   false,
+   0.4595,
+   0.294
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.25,
+   "pinch": 1.1267295572
+  },
+  "paint": [
+   "paint",
+   0.4595,
+   0.294
+  ]
+ },
+ "index_only@left": {
+  "core": [
+   "OTHER",
+   false,
+   0.25,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.25,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "paint",
+   0.25,
+   0.42
+  ]
+ },
+ "index_only@right": {
+  "core": [
+   "OTHER",
+   false,
+   0.65,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.25,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "paint",
+   0.65,
+   0.42
+  ]
+ },
+ "index_only@small": {
+  "core": [
+   "OTHER",
+   false,
+   0.4775,
+   0.51
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.25,
+   "pinch": 1.1267253842
+  },
+  "paint": [
+   "paint",
+   0.4775,
+   0.51
+  ]
+ },
+ "open": {
+  "core": [
+   "OPEN_PALM",
+   true,
+   0.47,
+   0.42
+  ],
+  "flower": "open",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 1.0,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "erase",
+   0.47,
+   0.42
+  ]
+ },
+ "open@big": {
+  "core": [
+   "OPEN_PALM",
+   true,
+   0.4595,
+   0.294
+  ],
+  "flower": "open",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 1.0,
+   "pinch": 1.1267295572
+  },
+  "paint": [
+   "erase",
+   0.4595,
+   0.294
+  ]
+ },
+ "open@left": {
+  "core": [
+   "OPEN_PALM",
+   true,
+   0.25,
+   0.42
+  ],
+  "flower": "open",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 1.0,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "erase",
+   0.25,
+   0.42
+  ]
+ },
+ "open@right": {
+  "core": [
+   "OPEN_PALM",
+   true,
+   0.65,
+   0.42
+  ],
+  "flower": "open",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 1.0,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "erase",
+   0.65,
+   0.42
+  ]
+ },
+ "open@small": {
+  "core": [
+   "OPEN_PALM",
+   true,
+   0.4775,
+   0.51
+  ],
+  "flower": "open",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 1.0,
+   "pinch": 1.1267253842
+  },
+  "paint": [
+   "erase",
+   0.4775,
+   0.51
+  ]
+ },
+ "pinch": {
+  "core": [
+   "PINCH",
+   true,
+   0.47,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.25,
+   "pinch": 0.0441938976
+  },
+  "paint": [
+   "grab",
+   0.47,
+   0.42
+  ]
+ },
+ "pinch@big": {
+  "core": [
+   "PINCH",
+   true,
+   0.4595,
+   0.294
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.25,
+   "pinch": 0.0441939692
+  },
+  "paint": [
+   "grab",
+   0.4595,
+   0.294
+  ]
+ },
+ "pinch@left": {
+  "core": [
+   "PINCH",
+   true,
+   0.25,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.25,
+   "pinch": 0.0441938976
+  },
+  "paint": [
+   "grab",
+   0.25,
+   0.42
+  ]
+ },
+ "pinch@right": {
+  "core": [
+   "PINCH",
+   true,
+   0.65,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.25,
+   "pinch": 0.0441938976
+  },
+  "paint": [
+   "grab",
+   0.65,
+   0.42
+  ]
+ },
+ "pinch@small": {
+  "core": [
+   "PINCH",
+   true,
+   0.4775,
+   0.51
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.25,
+   "pinch": 0.0441938055
+  },
+  "paint": [
+   "grab",
+   0.4775,
+   0.51
+  ]
+ },
+ "pinky_only": {
+  "core": [
+   "OTHER",
+   false,
+   0.47,
+   0.63
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.25,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.47,
+   0.63
+  ]
+ },
+ "pinky_only@big": {
+  "core": [
+   "OTHER",
+   false,
+   0.4595,
+   0.5775
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.25,
+   "pinch": 0.7288656125
+  },
+  "paint": [
+   "hover",
+   0.4595,
+   0.5775
+  ]
+ },
+ "pinky_only@left": {
+  "core": [
+   "OTHER",
+   false,
+   0.25,
+   0.63
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.25,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.25,
+   0.63
+  ]
+ },
+ "pinky_only@right": {
+  "core": [
+   "OTHER",
+   false,
+   0.65,
+   0.63
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.25,
+   "pinch": 0.7288644315
+  },
+  "paint": [
+   "hover",
+   0.65,
+   0.63
+  ]
+ },
+ "pinky_only@small": {
+  "core": [
+   "OTHER",
+   false,
+   0.4775,
+   0.6675
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.25,
+   "pinch": 0.728862913
+  },
+  "paint": [
+   "hover",
+   0.4775,
+   0.6675
+  ]
+ },
+ "three": {
+  "core": [
+   "OTHER",
+   false,
+   0.47,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.75,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.47,
+   0.42
+  ]
+ },
+ "three@big": {
+  "core": [
+   "OTHER",
+   false,
+   0.4595,
+   0.294
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.75,
+   "pinch": 1.1267295572
+  },
+  "paint": [
+   "hover",
+   0.4595,
+   0.294
+  ]
+ },
+ "three@left": {
+  "core": [
+   "OTHER",
+   false,
+   0.25,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.75,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.25,
+   0.42
+  ]
+ },
+ "three@right": {
+  "core": [
+   "OTHER",
+   false,
+   0.65,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.75,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.65,
+   0.42
+  ]
+ },
+ "three@small": {
+  "core": [
+   "OTHER",
+   false,
+   0.4775,
+   0.51
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.75,
+   "pinch": 1.1267253842
+  },
+  "paint": [
+   "hover",
+   0.4775,
+   0.51
+  ]
+ },
+ "two_finger": {
+  "core": [
+   "TWO_FINGER",
+   true,
+   0.47,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.512,
+   "openness": 0.5,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.47,
+   0.42
+  ]
+ },
+ "two_finger@big": {
+  "core": [
+   "TWO_FINGER",
+   true,
+   0.4595,
+   0.294
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.5162,
+   "openness": 0.5,
+   "pinch": 1.1267295572
+  },
+  "paint": [
+   "hover",
+   0.4595,
+   0.294
+  ]
+ },
+ "two_finger@left": {
+  "core": [
+   "TWO_FINGER",
+   true,
+   0.25,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.292,
+   "openness": 0.5,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.25,
+   0.42
+  ]
+ },
+ "two_finger@right": {
+  "core": [
+   "TWO_FINGER",
+   true,
+   0.65,
+   0.42
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.692,
+   "openness": 0.5,
+   "pinch": 1.1267277315
+  },
+  "paint": [
+   "hover",
+   0.65,
+   0.42
+  ]
+ },
+ "two_finger@small": {
+  "core": [
+   "TWO_FINGER",
+   true,
+   0.4775,
+   0.51
+  ],
+  "flower": "other",
+  "hand3d": {
+   "center_x": 0.509,
+   "openness": 0.5,
+   "pinch": 1.1267253842
+  },
+  "paint": [
+   "hover",
+   0.4775,
+   0.51
+  ]
+ }
+}
