@@ -4,13 +4,11 @@
     py -3.12 tools/make_screenshots.py
 
 不需要摄像头，也不改任何应用代码：直接调用各项目自己的绘制函数
-（render_sprite / strokes / particles / draw_skeleton），
+（render_sprite / strokes / particles），
 所以出来的图和运行时看到的是同一套像素逻辑。
 
-两处必须说明：
-  · 花开画的是真实玫瑰帧（本地有 rose_frames.npz 时），没有则用程序化花型；
-  · 隔空鼠标的画面由真实骨架绘制函数画出，但**背景是合成的**（无摄像头的环境里
-    造不出真实摄像头画面），仅用于表现界面元素的位置关系。
+一处必须说明：花开画的是真实玫瑰帧（本地有 rose_frames.npz 时），没有则用程序化花型。
+地球与中国地图的图不走这里，见文件末尾的提示。
 """
 import math
 from pathlib import Path
@@ -137,77 +135,9 @@ def shot_paint():
     save(ROOT / "projects" / "hand_paint" / "preview.png", canvas)
 
 
-# ---------------------------------------------------------------- 隔空鼠标
-class _Pt:
-    """最小关键点，字段与 mediapipe 的 NormalizedLandmark 对齐。"""
-
-    __slots__ = ("x", "y", "z")
-
-    def __init__(self, x, y, z=0.0):
-        self.x, self.y, self.z = x, y, z
-
-
-def _finger(mcp, tilt_deg, length, curve=0.0):
-    """指根 → PIP → DIP → TIP。tilt 从竖直方向偏转，curve 让指尖再外展一点。"""
-    x0, y0 = mcp
-    base = math.radians(tilt_deg)
-    pts = [(x0, y0)]
-    for frac in (0.46, 0.74, 1.0):
-        a = base + math.radians(curve) * frac
-        pts.append((x0 + math.sin(a) * length * frac,
-                    y0 - math.cos(a) * length * frac))
-    return pts
-
-
-def shot_air_mouse():
-    print("[隔空鼠标]")
-    from gesture_core import draw_skeleton
-
-    W, H = 960, 540          # 与 air_mouse.py 的 cam_size 一致
-
-    # 合成背景：暗色渐变 + 上方微弱主光。仅为让骨架有对比度，
-    # 不是真实摄像头画面（这里没有摄像头）。
-    yy = np.linspace(0, 1, H)[:, None]
-    xx = np.linspace(0, 1, W)[None, :]
-    glow = np.exp(-(((xx - 0.5) ** 2) / 0.18 + ((yy - 0.1) ** 2) / 0.25))
-    frame = np.zeros((H, W, 3), np.float32)
-    for i, (base, gain) in enumerate([(46, 26), (40, 22), (35, 18)]):   # B, G, R
-        frame[:, :, i] = base - 24 * yy + gain * glow
-    frame = np.clip(frame, 0, 255).astype(np.uint8)
-
-    # 张开的右手：五指外展、长度递减，比等长平行线更像真实手型
-    wrist = (0.515, 0.862)
-    palm_y = 0.612
-    fingers = [
-        ((0.462, palm_y), -13.0, 0.186, 5.0),   # 食指
-        ((0.505, palm_y), -3.0, 0.206, 2.0),    # 中指
-        ((0.548, palm_y), 7.0, 0.186, -3.0),    # 无名指
-        ((0.590, palm_y), 17.0, 0.150, -7.0),   # 小指
-    ]
-    thumb = [(0.472, 0.836), (0.433, 0.792), (0.399, 0.749), (0.371, 0.709)]
-
-    pts = [wrist] + thumb
-    for mcp, tilt, length, curve in fingers:
-        pts += _finger(mcp, tilt, length, curve)
-    assert len(pts) == 21, len(pts)
-
-    # 以腕为原点放大，让手在画面里的占比接近实际使用时的观感
-    SCALE, DX, DY = 1.45, 0.02, 0.015
-    wx, wy = wrist
-    pts = [(wx + (x - wx) * SCALE + DX, wy + (y - wy) * SCALE + DY) for x, y in pts]
-
-    hand = [_Pt(x, y) for x, y in pts]
-    draw_skeleton(frame, hand, color=(60, 220, 60))
-
-    cv2.putText(frame, "FPS 59.8  OPEN_PALM", (10, 30), FONT, 0.8, (0, 255, 255), 2)
-
-    save(ROOT / "projects" / "air_mouse" / "preview.png", frame)
-
-
 if __name__ == "__main__":
     shot_flower()
     shot_paint()
-    shot_air_mouse()
     print("\n地球的两张图已存在，如需重出：")
     print("  py -3.12 projects/hand_3d/tools_preview_globe.py --from-main "
           "--out projects/hand_3d/globe_preview.png")

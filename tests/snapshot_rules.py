@@ -54,7 +54,7 @@ def main():
             "openness": r(hand3d.openness(lm)),
         }
 
-        # 通用分类器（隔空鼠标用）；新旧 core 的入口名不同，两种都兼容
+        # 通用分类器；新旧 core 的入口名不同，两种都兼容
         try:
             import gesture_core as core
             if hasattr(core, "classify_gesture"):
