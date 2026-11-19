@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-双手 3D 地球交互
-  屏幕左侧的手：拇食指捏合=按住，移动旋转地球（松手带惯性）
-  屏幕右侧的手：张开程度控制镜头远近，越张开越靠近地球
-  双手同时捏合 0.5 秒：进入 / 退出中国地图
-    · 中国地图打开期间，一切手势都不再驱动地球（完全冻结），
-      只有"双手同时捏合"可以退出
-    · 地图淡出完毕后才重新接管手势，避免过渡期误操作
-ESC 退出
+双手 3D 地球 + 2D 中国地图（同一窗口，模式链）
+  地球模式
+    屏幕左侧的手：拇食指捏合=按住，移动旋转地球（松手带惯性）
+    屏幕右侧的手：张开程度控制镜头远近，越张开越靠近地球
+    双手同时捏合 0.5 秒（或按 M）：进入全屏中国地图
+  地图模式
+    右手食指=光标，悬停某省 + 捏合 0.5 秒 = 进入该省（显示市级边界）
+    左手捏合横拖=平移，上下拖=缩放
+    左手先收再张开、保持 0.6 秒 = 返回上一级；在中国层再返回 = 回地球
+ESC 在地图里退回地球，在地球退出
 """
 import math
 import sys
@@ -16,8 +18,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from PyQt6.QtCore import Qt, QObject, pyqtSignal, QTimer
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import Qt, QObject, pyqtSignal, QTimer, QPropertyAnimation
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QGraphicsOpacityEffect
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -31,6 +33,11 @@ import geo  # noqa: E402
 from detector import Hand3dDetector  # noqa: E402
 from rules import pinch_ratio, hand_center_x, openness  # noqa: E402
 from gesture_core import ClickDebounce  # noqa: E402
+
+# 第三模式： 2D 矢量中国地图（国 → 省 → 市），已并入本目录，自包含
+import map_data  # noqa: E402
+from map_view import MapView  # noqa: E402
+from roam import GestureController  # noqa: E402
 
 MODEL_PATH = str(ROOT / "assets" / "hand_landmarker.task")
 TEX_DIR = ROOT / "textures"
@@ -177,6 +184,8 @@ class GLWidget(QOpenGLWidget):
         self._quad = None
         self._tex_day = self._tex_clouds = self._tex_lights = self._tex_china = 0
         self._stars = None
+        self.on_double_pinch = None   # 主窗口接管：双手捏合 → 进入 2D 中国地图
+        self._active = True           # 地图完全盖住后暂停地球渲染，省 GPU
 
         # 模式机：只有 EARTH 模式才允许手势驱动地球
         self.mode = MODE_EARTH
@@ -215,6 +224,13 @@ class GLWidget(QOpenGLWidget):
         except Exception:
             pass
 
+    def set_active(self, on):
+        """地图淡入完成后暂停地球渲染；切回地球时恢复。"""
+        self._active = bool(on)
+        if on:
+            self._last_tick = 0.0
+            self.update()
+
     def earth_ready(self):
         """地图淡出到几乎看不见，才把手势交还地球。"""
         return self.mode == MODE_EARTH and self.china_alpha < EARTH_READY_ALPHA
@@ -241,7 +257,10 @@ class GLWidget(QOpenGLWidget):
                       and pinch_ratio(rot_hand) < PINCH_THRESHOLD
                       and pinch_ratio(zoom_hand) < PINCH_THRESHOLD)
         if self._mode_switch.should_fire(both_pinch):
-            self.set_mode(MODE_MAP if self.mode == MODE_EARTH else MODE_EARTH)
+            if self.on_double_pinch is not None:
+                self.on_double_pinch()
+            else:
+                self.set_mode(MODE_MAP if self.mode == MODE_EARTH else MODE_EARTH)
             return
 
         # 地图打开中、或地图还没淡出干净：手势一律不作用于地球
@@ -279,6 +298,8 @@ class GLWidget(QOpenGLWidget):
             self._last_pinch_pos = None
 
     def _tick(self):
+        if not self._active:
+            return
         now = time.perf_counter()
         dt = 0.016 if self._last_tick == 0.0 else now - self._last_tick
         self._last_tick = now
@@ -487,24 +508,169 @@ class GLWidget(QOpenGLWidget):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    """模式链：地球 →（双手捏合）→ 中国平面 →（捏合悬停）→ 省 → 市。
+
+    地球仍是原来的 GLWidget；2D 地图是 china_roam 的 MapView，
+    作为子窗口叠在地球上，用透明度动画做交叉淡入淡出。
+    在中国这一层再做一次“左手收→张开”就退回地球。
+    """
+
+    def __init__(self, start_map=False):
         super().__init__()
         self.setWindowTitle("双手 3D 地球")
         self.resize(1280, 800)
         self.gl = GLWidget()
         self.setCentralWidget(self.gl)
+        self.gl.on_double_pinch = self.enter_map
+        self.mode = MODE_EARTH
+        self._hold_until = 0.0        # 切换后的短暂静默，避免同一捏合被两边各用一次
+
+        self.map_view = MapView(self)
+        self._map_error = ""
+        try:
+            self.map_view.set_root(map_data.load_root())
+        except (SystemExit, Exception) as e:
+            # 边界数据缺失 / JSON 坏了，只让地图不可用，别把整个程序带走：
+            # 地球部分本来不需要这些数据。
+            self._map_error = str(e) or "地图边界数据不可用"
+        self.map_view.setGeometry(self.gl.geometry())
+        self.map_view.hide()
+        self._opacity = QGraphicsOpacityEffect(self.map_view)
+        self._opacity.setOpacity(0.0)
+        self.map_view.setGraphicsEffect(self._opacity)
+        self._fade = QPropertyAnimation(self._opacity, b"opacity", self)
+        self._fade.setDuration(260)
+        self._fade.finished.connect(self._fade_done)
 
         self.bridge = Bridge()
-        self.bridge.signal.connect(self.gl.apply_hands)
+        self.bridge.signal.connect(self._on_hands)
         self.det = Hand3dDetector(MODEL_PATH, on_hands=self._emit)
         self.det.start()
 
+        self.roam = GestureController(self.map_view, self.det)
+        self.roam.active = False
+        self.roam.on_back_at_root = self.exit_map
+
+        if start_map:
+            QTimer.singleShot(0, self.enter_map)
+        elif self._map_error:
+            QTimer.singleShot(300, lambda: self._toast(
+                "地图边界数据不可用，当前只能看地球：" + self._map_error.splitlines()[0], 6.0))
+
+    # ---------- 提示 ----------
+    def _toast(self, text, secs=4.0):
+        """窗口顶部的一行提示，几秒后自己消失；非致命错误用它，不弹模态框。"""
+        if not hasattr(self, "_toast_label"):
+            self._toast_label = QLabel(self)
+            self._toast_label.setStyleSheet(
+                "background: rgba(12,22,38,235); color:#cfe3ff;"
+                "border:1px solid #3f6f9f; border-radius:6px; padding:8px 14px;")
+            self._toast_label.setWordWrap(False)
+            self._toast_timer = QTimer(self)
+            self._toast_timer.setSingleShot(True)
+            self._toast_timer.timeout.connect(self._toast_label.hide)
+        self._toast_label.setText(text)
+        self._toast_label.adjustSize()
+        self._toast_label.move(max(0, (self.width() - self._toast_label.width()) // 2), 24)
+        self._toast_label.show()
+        self._toast_label.raise_()
+        self._toast_timer.start(int(secs * 1000))
+
+    # ---------- 手势路由 ----------
     def _emit(self, hands):
         self.bridge.signal.emit(hands)
 
+    def _on_hands(self, hands):
+        if time.perf_counter() < self._hold_until:
+            return
+        if self.mode == MODE_MAP:
+            self.roam.on_hands(hands)
+        else:
+            self.gl.apply_hands(hands)
+
+    # ---------- 模式切换 ----------
+    def enter_map(self):
+        if self.mode == MODE_MAP:
+            return
+        if self._map_error:
+            self._toast("地图边界数据不可用：" + self._map_error.splitlines()[0])
+            return
+        self.mode = MODE_MAP
+        self._hold_until = time.perf_counter() + 0.45
+        self.map_view.reset()
+        self.map_view.setGeometry(self.gl.geometry())
+        self.roam.reset_for_entry()     # 清掉进入前的手，别用旧姿态蓄力 / 误判返回
+        self.roam.active = True
+        self.map_view.show()
+        self.map_view.raise_()
+        self._fade.stop()
+        self._fade.setStartValue(0.0)
+        self._fade.setEndValue(1.0)
+        self._fade.start()
+        self.setWindowTitle("中国地图 · 右手捏合进省 / 左手收→张开返回")
+        self.map_view.setFocus()
+
+    def exit_map(self):
+        if self.mode != MODE_MAP:
+            return
+        self.mode = MODE_EARTH
+        self._hold_until = time.perf_counter() + 0.45
+        self.roam.active = False
+        self.gl.set_active(True)
+        self._fade.stop()
+        self._fade.setStartValue(self._opacity.opacity())
+        self._fade.setEndValue(0.0)
+        self._fade.start()
+        self.setWindowTitle("双手 3D 地球")
+        self.gl.setFocus()
+
+    def _fade_done(self):
+        if self.mode == MODE_MAP and self._opacity.opacity() > 0.99:
+            self.gl.set_active(False)       # 地图已不透明，地球可以停工
+        elif self.mode == MODE_EARTH and self._opacity.opacity() < 0.01:
+            self.map_view.hide()
+
+    # ---------- 窗口事件 ----------
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        if hasattr(self, "map_view"):
+            self.map_view.setGeometry(self.gl.geometry())
+
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key.Key_Escape:
-            self.close()
+        key = e.key()
+        if key == Qt.Key.Key_Escape:
+            if self.mode == MODE_MAP:
+                self.exit_map()
+            else:
+                self.close()
+            return
+        if self.mode == MODE_MAP:
+            if key == Qt.Key.Key_M:
+                self.exit_map()
+            elif key in (Qt.Key.Key_Backspace, Qt.Key.Key_B):
+                if self.map_view.current is self.map_view.root:
+                    self.exit_map()
+                else:
+                    self.map_view.back()
+            elif key == Qt.Key.Key_R:
+                self.map_view.reset()
+            elif key in (Qt.Key.Key_Plus, Qt.Key.Key_Equal):
+                self.map_view.zoom_by(0.25)
+            elif key == Qt.Key.Key_Minus:
+                self.map_view.zoom_by(-0.25)
+            elif key == Qt.Key.Key_Left:
+                self.map_view.pan_pixels(60, 0)
+            elif key == Qt.Key.Key_Right:
+                self.map_view.pan_pixels(-60, 0)
+            elif key == Qt.Key.Key_Up:
+                self.map_view.pan_pixels(0, 60)
+            elif key == Qt.Key.Key_Down:
+                self.map_view.pan_pixels(0, -60)
+            return
+        if key == Qt.Key.Key_M:
+            self.enter_map()        # 等价于双手同时捏合
+            return
+        super().keyPressEvent(e)
 
     def closeEvent(self, e):
         self.det.stop()
@@ -514,6 +680,6 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    win = MainWindow()
+    win = MainWindow(start_map="--map" in sys.argv)
     win.show()
     sys.exit(app.exec())
