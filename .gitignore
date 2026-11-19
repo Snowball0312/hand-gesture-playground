@@ -23,6 +23,7 @@ desktop.ini
 .workbuddy/
 _archive/
 *.log
+*.bak
 projects/hand_3d/_tmp_*.png
 tests/_tmp_*.py
 _probe_*.py
